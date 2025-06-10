@@ -2,11 +2,9 @@
 
 Our codes are based on MMDetection. Please follow the installation of MMDetection and make sure you can run it successfully.
 
-### Major features
+### Add and Replace the codes
 
-- **Modular Design**
-
-  We decompose the detection framework into different components and one can easily construct a customized object detection framework by combining different modules.
+- Add the configs/. in our codes to the configs/ in mmdetectin's codes.
 
 - **Support of multiple frameworks out of box**
 
