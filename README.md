@@ -12,9 +12,11 @@ Our codes are based on MMDetection. Please follow the installation of MMDetectio
 
 ### Train
 ```
-#single GPU
-python tools/train.py configs/distillers/fgd/fgd_retina_rx101_64x4d_distill_retina_r50_fpn_2x_coco.py
+python tools/train.py configs/faster_rcnn_r50_distill_r18_fpn_HRSID.py.py
 ```
 
-  All basic bbox and mask operations run on GPUs. The training speed is faster than or comparable to other codebases, including [Detectron2](https://github.com/facebookresearch/detectron2), [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark) and [SimpleDet](https://github.com/TuSimple/simpledet).
+### Test
+```
+python tools/test.py configs/faster_rcnn_r50_distill_r18_fpn_HRSID.py.py ***.pth
+```
 
