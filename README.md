@@ -1,7 +1,7 @@
 
 ## **Dual-Information-Purification-for-Lightweight-SAR-Object-Detection**
 
-![image](https://github.com/Mok-kn/Dip/blob/main/figure2.pdf)
+![image][(https://github.com/Mok-kn/Dip/blob/main/figure2.pdf)](https://github.com/Mok-kn/Dip/blob/main/figure1.png)
 
 ### Introduction
 
