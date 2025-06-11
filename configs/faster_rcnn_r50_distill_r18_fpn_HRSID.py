@@ -5,10 +5,7 @@ _base_ = [
 # model settings
 find_unused_parameters=True
 temp=0.5
-# temp=0.5
-# alpha_fgd=0
 alpha_fgd=0.00004
-# beta_fgd=0.000035
 beta_fgd=0.000025
 gamma_fft=0.00000001
 
@@ -17,7 +14,7 @@ lambda_mask = 1
 distiller = dict(
     type='DetectionDistiller',
     # teacher_pretrained = 'https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r101_fpn_2x_coco/faster_rcnn_r101_fpn_2x_coco_bbox_mAP-0.398_20200504_210455-1d2dac9c.pth',
-    teacher_pretrained = 'A_work_dirs/Work1/faster_rcnn/r50_HRSID/epoch_24.pth',
+    teacher_pretrained = '',
     init_student = True,
     distill_cfg = [ dict(student_module = 'neck.fpn_convs.3.conv',
                          teacher_module = 'neck.fpn_convs.3.conv',
@@ -82,8 +79,8 @@ distiller = dict(
                    ]
     )
 
-student_cfg = '/media/yangxilab/DiskB/sjc/practice/FGD/FGD-master/mmdetection/configs/AA_faster_rcnn/faster_rcnn_r18_fpn_HRSID.py'
-teacher_cfg = '/media/yangxilab/DiskB/sjc/practice/FGD/FGD-master/mmdetection/configs/AA_faster_rcnn/faster_rcnn_r50_fpn_HRSID.py'
+student_cfg = ''
+teacher_cfg = ''
 
 dataset_type = 'CocoDataset'
 data_root = 'data/HRSID/HRSID_JPG'
@@ -94,7 +91,7 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='Resize', img_scale=(1200, 800), keep_ratio=True),
+    dict(type='Resize', img_scale=(1300, 800), keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
@@ -105,7 +102,7 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(1200, 800),
+        img_scale=(1300, 800),
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -151,4 +148,4 @@ lr_config = dict(
     step=[16, 20])
 runner = dict(type='EpochBasedRunner', max_epochs=24)
 
-work_dir = '/media/yangxilab/DiskB/sjc/practice/FGD/FGD-master/mmdetection/A_work_dirs/Rebuttal/faster_rcnn/HRSID_m_1'
+work_dir = ''
