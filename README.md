@@ -1,5 +1,7 @@
 ## Introduction
 
+**Dual Information Purification for Lightweight SAR Object Detection**
+
 Our codes are based on MMDetection. Please follow the installation of MMDetection and make sure you can run it successfully.
 
 ### Add and Replace the codes
@@ -20,3 +22,4 @@ python tools/train.py configs/faster_rcnn_r50_distill_r18_fpn_HRSID.py.py
 python tools/test.py configs/faster_rcnn_r50_distill_r18_fpn_HRSID.py.py ***.pth
 ```
 
+### Citation
