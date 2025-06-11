@@ -1,6 +1,8 @@
 
 ## **Dual-Information-Purification-for-Lightweight-SAR-Object-Detection**
 
+![image]([https://github.com/ZhiliangMa/MPU6500-HMC5983-AK8975-BMP280-MS5611-10DOF-IMU-PCB/blob/main/img/IMU-V5-TOP.jpg](https://github.com/Mok-kn/Dip/blob/main/figure2.pdf))
+
 ### Introduction
 
 Our codes are based on MMDetection. Please follow the installation of MMDetection and make sure you can run it successfully.
