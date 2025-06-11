@@ -1,6 +1,7 @@
-## Introduction
 
-**Dual-Information-Purification-for-Lightweight-SAR-Object-Detection**
+## **Dual-Information-Purification-for-Lightweight-SAR-Object-Detection**
+
+### Introduction
 
 Our codes are based on MMDetection. Please follow the installation of MMDetection and make sure you can run it successfully.
 
