@@ -5,9 +5,9 @@ _base_ = [
 # model settings
 find_unused_parameters=True
 temp=0.5
-alpha_fgd=0.00004
-beta_fgd=0.000025
-gamma_fft=0.00000001
+alpha_fgd=
+beta_fgd=
+gamma_fft=
 
 lambda_mask = 1
 
