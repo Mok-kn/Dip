@@ -5,12 +5,9 @@ _base_ = [
 # model settings
 find_unused_parameters=True
 temp=0.5
-# alpha_fgd=0
-alpha_fgd=0.00005
-# beta_fgd=0.000025
-beta_fgd=0.000035
-gamma_fft=0.00000001
-
+alpha_fgd=
+beta_fgd=
+gamma_fft=
 lambda_mask = 0.25
 
 distiller = dict(
@@ -81,8 +78,8 @@ distiller = dict(
                    ]
     )
 
-student_cfg = '/media/yangxilab/DiskB/sjc/practice/FGD/FGD-master/mmdetection/configs/AA_faster_rcnn/faster_rcnn_r18_fpn_SSDD.py'
-teacher_cfg = '/media/yangxilab/DiskB/sjc/practice/FGD/FGD-master/mmdetection/configs/AA_faster_rcnn/faster_rcnn_r50_fpn_SSDD.py'
+student_cfg = ''
+teacher_cfg = ''
 
 dataset_type = 'CocoDataset'
 data_root = 'data_SSDD/coco_SSDD/'
@@ -93,7 +90,7 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='Resize', img_scale=(1000, 600), keep_ratio=True),
+    dict(type='Resize', img_scale=(1300, 800), keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
@@ -104,7 +101,7 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(1000, 600),
+        img_scale=(1300, 800),
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -151,7 +148,6 @@ lr_config = dict(
     step=[16, 20])
 runner = dict(type='EpochBasedRunner', max_epochs=24)
 
-# work_dir = '/media/yangxilab/DiskB/sjc/practice/FGD/FGD-master/mmdetection/A_work_dirs/Work1_1/faster_rcnn1/r50disr18_SSDD'
 
-work_dir = '/media/yangxilab/DiskB/sjc/practice/FGD/FGD-master/mmdetection/A_work_dirs/20250425/fasterrcnn'
+work_dir = ''
 
