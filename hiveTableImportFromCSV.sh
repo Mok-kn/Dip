@@ -144,3 +144,14 @@ wait
 # ####################################################################
 
 echo "Import finished"
+
+Step 1: Copying CSV file to remote server...
+spawn scp T1.csv ossuser@172.28.129.141:/tmp/T1.csv
+Authorized users only. All activities may be monitored and reported.
+ossuser@172.28.129.141's password: 
+T1.csv                                                                                                                                                                                                         100%  301   332.8KB/s   00:00    
+Step 2: Executing commands on remote server...
+spawn ssh -T ossuser@172.28.129.141
+Authorized users only. All activities may be monitored and reported.
+ossuser@172.28.129.141's password: 
+Authorized users only. All activities may be monitored and reported.
