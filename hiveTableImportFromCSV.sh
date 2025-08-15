@@ -115,19 +115,23 @@ set timeout -1
 set password \"$PASSWORD\"
 set remote_commands {${REMOTE_COMMANDS}}
 
-# 启动 ssh 进程。-T 选项很重要，它禁止分配伪终端，使交互更适合脚本
+# 启动 ssh 进程
 spawn ssh -T ossuser@${MAINT_NODE}
 
-# 等待密码提示
-expect -re \"password.*:\"
+# 使用一个循环块来处理多种可能的输出，这是处理 banner 的最佳实践
+expect {
+    -re \"password.*:\" {
+        send \"\$password\\r\"
+        # exp_continue 是关键: 它告诉 expect 继续在这个 expect 块里等待下一个匹配
+        exp_continue
+    }
+    -re {\$ $} {
+        # 当匹配到最终的 shell 提示符时，这个块会执行。
+        # 我们什么也不用做，expect 块会自动结束，代码继续往下执行。
+    }
+}
 
-# 发送密码
-send \"\$password\\r\"
-
-# 等待远程shell提示符。这是一个关键的同步步骤。
-# 这个正则表达式匹配大多数常见的提示符结尾，如 '$', '#', '>'
-expect -re {\$ $}
-
+# 只有在成功等到 shell 提示符后，代码才会执行到这里
 # 发送我们之前准备好的所有命令
 send \"\$remote_commands\\r\"
 
@@ -145,13 +149,3 @@ wait
 
 echo "Import finished"
 
-Step 1: Copying CSV file to remote server...
-spawn scp T1.csv ossuser@172.28.129.141:/tmp/T1.csv
-Authorized users only. All activities may be monitored and reported.
-ossuser@172.28.129.141's password: 
-T1.csv                                                                                                                                                                                                         100%  301   332.8KB/s   00:00    
-Step 2: Executing commands on remote server...
-spawn ssh -T ossuser@172.28.129.141
-Authorized users only. All activities may be monitored and reported.
-ossuser@172.28.129.141's password: 
-Authorized users only. All activities may be monitored and reported.
