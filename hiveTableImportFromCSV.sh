@@ -22,9 +22,17 @@ MAE_INST=$(find /opt/cloud -maxdepth 1 -name "MAE*" | head -1 | awk -F'/' '{prin
 REMOTE_CSV="/tmp/$(basename "$CSV")"
 BEELINE_URL="jdbc:hive2://${HDFS_NODE}:22550/;principal=spark2x/hadoop.hadoop.com@HADOOP.COM;saslQop=auth-conf;auth=KERBEROS;user.principal=spark2x/hadoop.hadoop.com@HADOOP.COM;user.keytab=/opt/cloud/${MAE_INST}/apps/HDSparkThriftService/etc/spark2x.keytab;ssl=true"
 
-PASSWORD="Huawei_123"
+# ####################################################################
+# ## 关键修改部分开始
+# ####################################################################
+
+# 仍然硬编码密码，因为这是前提条件
+PASSWORD="123456"
+
+# 步骤1: 使用 expect 处理 scp (这部分和您原来的一样)
+echo "Step 1: Copying CSV file to remote server..."
 expect -c "
-set timeout -1
+set timeout 120
 spawn scp \"$CSV\" ossuser@${MAINT_NODE}:${REMOTE_CSV}
 expect {
     -re \"password.*:\" { send \"$PASSWORD\\r\"; exp_continue }
@@ -32,21 +40,24 @@ expect {
 }
 wait
 "
-REMOTE_CSV_NOHDR="/tmp/$(basename "${CSV}" .csv)_nohdr.csv"
 
-ssh -T ossuser@"${MAINT_NODE}" <<EOF
+# 步骤2: 将原 heredoc 中的所有命令读入一个 Bash 变量
+# 使用 `cat <<EOF` 可以完美保留变量展开规则 (本地的展开, 远程的\$f不展开)
+REMOTE_COMMANDS=$(cat <<EOF
 set -euo pipefail
 
+# 远程环境设置
 for f in /opt/cloud/${MAE_INST}/apps/HDSparkThriftService/envs/*.properties; do
     [[ -f "\$f" ]] && export \$(grep = "\$f" | xargs)
 done
 cd /opt/cloud/${MAE_INST}/apps/HDSparkThriftService/rtsp/NdpSparkComponent/pkg/bin
 
+# 远程变量定义
 TMP_DB="tmp_imp_\$(date +%s)"
 TMP_TBL="\${TMP_DB}.${TBL}_csv"
-
-
 REMOTE_CSV_NOHDR="/tmp/\$(basename ${REMOTE_CSV} .csv)_nohdr.csv"
+
+# 执行数据处理
 tail -n +2 "${REMOTE_CSV}" > "\${REMOTE_CSV_NOHDR}"
 
 ./beeline -u "${BEELINE_URL}" --outputformat=csv2 -e "
@@ -67,7 +78,7 @@ CREATE TABLE \${TMP_TBL} (
 ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE;"
 
 ./beeline -u "${BEELINE_URL}" --outputformat=csv2 -e "
-LOAD DATA LOCAL INPATH '${REMOTE_CSV_NOHDR}' INTO TABLE \${TMP_TBL};"
+LOAD DATA LOCAL INPATH '\${REMOTE_CSV_NOHDR}' INTO TABLE \${TMP_TBL};"
 
 ./beeline -u "${BEELINE_URL}" --outputformat=csv2 -e "
 SET hive.exec.dynamic.partition=true;
@@ -90,7 +101,46 @@ FROM \${TMP_TBL};"
 DROP TABLE \${TMP_TBL};
 DROP DATABASE \${TMP_DB};"
 
-rm -f "${REMOTE_CSV}"
+# 清理远程文件
+rm -f "${REMOTE_CSV}" "\${REMOTE_CSV_NOHDR}"
 EOF
+)
+
+
+# 步骤3: 使用新的 expect 块来处理 ssh 登录和命令执行
+echo "Step 2: Executing commands on remote server..."
+expect -c "
+set timeout -1
+# 将 Bash 变量传递给 expect 脚本
+set password \"$PASSWORD\"
+set remote_commands {${REMOTE_COMMANDS}}
+
+# 启动 ssh 进程。-T 选项很重要，它禁止分配伪终端，使交互更适合脚本
+spawn ssh -T ossuser@${MAINT_NODE}
+
+# 等待密码提示
+expect -re \"password.*:\"
+
+# 发送密码
+send \"\$password\\r\"
+
+# 等待远程shell提示符。这是一个关键的同步步骤。
+# 这个正则表达式匹配大多数常见的提示符结尾，如 '$', '#', '>'
+expect -re {\$ $}
+
+# 发送我们之前准备好的所有命令
+send \"\$remote_commands\\r\"
+
+# 发送 exit 命令来关闭 session
+send \"exit\\r\"
+
+# 等待进程结束
+expect eof
+wait
+"
+
+# ####################################################################
+# ## 关键修改部分结束
+# ####################################################################
 
 echo "Import finished"
