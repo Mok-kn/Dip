@@ -152,3 +152,11 @@ echo ""
 # Finalization
 # ===================================================================
 echo "数据导入任务成功完成！"
+
+
+--> 步骤 3: 正在远程执行数据导入流程...
+extra characters after close-quote
+    while executing
+"spawn ssh "ossuser@172.28.129.141" "# 在远程服务器上执行, 开启错误检查
+set -euo pipefail
+echo "-"
