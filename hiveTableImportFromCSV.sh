@@ -135,13 +135,25 @@ echo ""
 # Step 3: 通过SSH执行远程命令集
 # ===================================================================
 echo "--> 步骤 3: 正在远程执行数据导入流程..."
-# 使用与您的导出脚本完全相同的非交互式模式
+
+# 导出变量，以便 expect 脚本可以读取
+export MAINT_NODE
+export PASSWORD
+export REMOTE_COMMANDS
+
+# 使用修正后的 expect 块
 expect << EOF
 set timeout -1
-# 将整个命令块作为单个参数传递给ssh
-spawn ssh "ossuser@${MAINT_NODE}" "${REMOTE_COMMANDS}"
+# 从环境变量中安全地读取值
+set maint_node  \$env(MAINT_NODE)
+set password    \$env(PASSWORD)
+set commands    \$env(REMOTE_COMMANDS)
+
+# 使用大括号 {} 来包裹命令字符串，防止 Tcl 解析器出错
+spawn ssh "ossuser@\$maint_node" -- \$commands
+
 expect {
-    -re "password.*:" { send "$PASSWORD\r"; exp_continue }
+    -re "password.*:" { send "\$password\r"; exp_continue }
     eof
 }
 EOF
