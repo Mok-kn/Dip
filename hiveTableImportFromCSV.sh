@@ -109,30 +109,34 @@ EOF
 
 # 步骤3: 使用新的 expect 块来处理 ssh 登录和命令执行
 echo "Step 2: Executing commands on remote server..."
+echo "Step 2: Executing commands on remote server..."
 expect -c "
 set timeout -1
-# 将 Bash 变量传递给 expect 脚本
 set password \"$PASSWORD\"
+# 注意这里的 { ... }，它能防止 bash 变量和 expect 变量的混淆
 set remote_commands {${REMOTE_COMMANDS}}
 
-# 启动 ssh 进程
 spawn ssh -T ossuser@${MAINT_NODE}
 
-# 使用一个循环块来处理多种可能的输出，这是处理 banner 的最佳实践
+# 使用一个循环块来处理多种可能的输出
 expect {
+    timeout {
+        # 如果等待超过默认时间（这里因为 set timeout -1 所以不会触发，但这是好习惯）
+        # 或者在特定 expect 中设置了超时，则会执行这里
+        send_user \"Error: Timed out waiting for prompt.\\n\"
+        exit 1
+    }
     -re \"password.*:\" {
         send \"\$password\\r\"
-        # exp_continue 是关键: 它告诉 expect 继续在这个 expect 块里等待下一个匹配
         exp_continue
     }
-    -re {\$ $} {
-        # 当匹配到最终的 shell 提示符时，这个块会执行。
-        # 我们什么也不用做，expect 块会自动结束，代码继续往下执行。
+    # 这是关键的修改：使用更通用的正则表达式匹配 shell 提示符
+    -re {[$#>] $} {
+        # 成功匹配到提示符，expect 块将正常结束
     }
 }
 
 # 只有在成功等到 shell 提示符后，代码才会执行到这里
-# 发送我们之前准备好的所有命令
 send \"\$remote_commands\\r\"
 
 # 发送 exit 命令来关闭 session
