@@ -25,6 +25,10 @@ python tools/train.py configs/faster_rcnn_r50_distill_r18_fpn_HRSID.py.py
 python tools/test.py configs/faster_rcnn_r50_distill_r18_fpn_HRSID.py.py ***.pth
 ```
 
+### CheckPoint
+[Model](https://pan.quark.cn/s/85dbabf61242)
+Code:Khbd
+
 ### Citation
 ```
 @inproceedings{
